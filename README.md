@@ -48,3 +48,9 @@ az connectedk8s delete --name AzureArcTest1 --resource-group AzureArcTest
 ```
 
 NOTE: Deleting the Azure Arc-enabled Kubernetes resource using the Azure portal removes any associated configuration resources, but does not remove any agents running on the cluster. Best practice is to delete the Azure Arc-enabled Kubernetes resource using az connectedk8s delete rather than deleting the resource in the Azure portal.
+
+
+## Creating Service Account and connecting to cluster remotely
+
+https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/cluster-connect?tabs=azure-cli%2Cagent-version#service-account-token-authentication-option
+
