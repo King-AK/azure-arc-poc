@@ -24,4 +24,3 @@ mkdir -p tmp
 echo $TOKEN > tmp/demo-user-secret
 
 # Above token can be used in portal to get access to cluster namespaces from portal
-
