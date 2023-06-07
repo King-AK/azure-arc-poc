@@ -1,0 +1,10 @@
+{
+  "Name": "Read authorization",
+  "IsCustom": true,
+  "Description": "Read authorization",
+  "Actions": ["Microsoft.Authorization/*/read"],
+  "NotActions": [],
+  "DataActions": [],
+  "NotDataActions": [],
+  "AssignableScopes": ["/subscriptions/<subscription-id>"]
+}

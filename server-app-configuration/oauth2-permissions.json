@@ -1,14 +1,14 @@
 {
-    "oauth2PermissionScopes": [
-        {
-            "adminConsentDescription": "Sign in and read user profile",
-            "adminConsentDisplayName": "Sign in and read user profile",
-            "id": "<paste_the_SERVER_APP_ID>",
-            "isEnabled": true,
-            "type": "User",
-            "userConsentDescription": "Sign in and read user profile",
-            "userConsentDisplayName": "Sign in and read user profile",
-            "value": "User.Read"
-        }
-    ]
+  "oauth2PermissionScopes": [
+    {
+      "adminConsentDescription": "Sign in and read user profile",
+      "adminConsentDisplayName": "Sign in and read user profile",
+      "id": "<paste_the_SERVER_APP_ID>",
+      "isEnabled": true,
+      "type": "User",
+      "userConsentDescription": "Sign in and read user profile",
+      "userConsentDisplayName": "Sign in and read user profile",
+      "value": "User.Read"
+    }
+  ]
 }

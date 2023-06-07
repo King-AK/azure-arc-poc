@@ -17,6 +17,25 @@ APP_ID=$(echo $OUTPUT | jq -r .appId)
 SP_SECRET=$(echo $OUTPUT | jq -r .password)
 echo "Created SP $SP_NAME with APP ID: $APP_ID ..."
 
+# Update the application's group membership claims
+az ad app update --id "${SERVER_APP_ID}" --set groupMembershipClaims=All
+az ad app update --id ${SERVER_APP_ID} --set  api=@oauth2-permissions.json
+az ad app update --id ${SERVER_APP_ID} --set  signInAudience=AzureADMyOrg
+SERVER_OBJECT_ID=$(az ad app show --id "${SERVER_APP_ID}" --query "id" -o tsv)
+az rest --method PATCH --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications/${SERVER_OBJECT_ID}/ --body '{"api":{"requestedAccessTokenVersion": 1}}'
+
+# Grant "Sign in and read user profile" API permissions to the application
+az ad app permission add --id "${SERVER_APP_ID}" --api 00000003-0000-0000-c000-000000000000 --api-permissions e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
+az ad app permission grant --id "${SERVER_APP_ID}" --api 00000003-0000-0000-c000-000000000000 --scope User.Read
+
+# TODO: figure out if client stuff needed
+
+# Create custom role for server application
+ROLE_ID=$(az role definition create --role-definition ./accessCheck.json --query id -o tsv)
+
+# Create a role assignment on the server application using the custom role
+az role assignment create --role "${ROLE_ID}" --assignee "${SERVER_APP_ID}" --scope /subscriptions/<subscription-id>
+
 # Enable RBAC on the Arc Enabled k8s cluster
 az connectedk8s enable-features --name <clusterName> \
                                 --resource-group <resourceGroupName> \
