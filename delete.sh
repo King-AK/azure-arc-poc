@@ -3,7 +3,7 @@ rg_name=$2
 
 # Remove Azure Monitor Container Insights Extension
 echo "Begin Removing Azure Monitor Container Insights Extension ..."
-bash scripts/remove-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
+bash scripts/azure-monitor-container-insights/remove-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
 # Delete Service Account Credentials - TODO: replace with Azure RBAC
 echo "Begin Deleting Service Account Credentials ..."
 bash scripts/delete-k8s-service-account.sh
