@@ -12,11 +12,20 @@ echo "Service Account Credential available in tmp directory. Use this to access 
 # Create custom location
 echo "Begin Enable Custom Location ..."
 bash scripts/enable-arc-custom-location.sh $cluster_name $rg_name
-# Deploy Azure Monitor Container Insights Extension
+
+# Deploy Extensions
 echo "Begin Deploying Azure Monitor Container Insights Extension ..."
 bash scripts/azure-monitor-container-insights/deploy-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
-# # Deploy Azure App Service Extension
-# # Note: Extension type microsoft.web.appservice is not registered in region eastus2. Extension is available in eastus2euap,eastus,westeurope,westcentralus. Please try to install in these regions.
-# echo "Begin Deploying Azure App Service Extension ..."
+
+#Note: Extension type microsoft.web.appservice is not registered in region eastus2. Extension is available in eastus2euap,eastus,westeurope,westcentralus. Please try to install in these regions.
+# echo "Begin Deploying Azure App Service Container Insights Extension ..."
 # bash scripts/app-service-extension/deploy-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
 
+echo "Begin Deploying Azure Machine Learning Extension ..."
+bash scripts/azure-ml-extension/deploy-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
+
+echo "Begin Deploying Azure Policy Extension ..."
+bash scripts/azure-policy-extension/deploy-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
+
+echo "Begin Deploying Open Service Mesh Extension ..."
+bash scripts/open-service-mesh-extension/deploy-arc-enabled-k8s-extensions.sh $cluster_name $rg_name
