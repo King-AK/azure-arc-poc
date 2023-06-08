@@ -2,7 +2,7 @@ cluster_name=$1
 rg_name=$2
 extension_name="osm" # Name of the extension
 extension_type="Microsoft.openservicemesh" # Type of the extension
-
+extension_desc="Open Service Mesh"
 
 # Install AZ CLI extensions if not already installed
 az extension add --name connectedk8s
@@ -12,8 +12,8 @@ az extension add --name k8s-extension
 az extension update --name connectedk8s
 az extension update --name k8s-extension
 
-# Create extension instance for Open Service Mesh
-echo "Creating extension instance for Open Service Mesh ..."
+# Create extension instance
+echo "Creating extension instance for ${extension_desc} ..."
 az k8s-extension create --cluster-name $cluster_name \
                         --resource-group $rg_name \
                         --cluster-type connectedClusters \
@@ -21,8 +21,8 @@ az k8s-extension create --cluster-name $cluster_name \
                         --scope cluster \
                         --name $extension_name
 
-# Show extension details for Open Service Mesh
-echo "Showing extension details for Open Service Mesh ..."
+# Show extension details
+echo "Showing extension details for ${extension_desc} ..."
 az k8s-extension show --name $extension_name \
                       --cluster-name $cluster_name \
                       --resource-group $rg_name \
