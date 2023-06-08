@@ -38,8 +38,8 @@ az k8s-extension create \
     --configuration-settings "customConfigMap=${namespace}/kube-environment-config" \
     # --configuration-settings "envoy.annotations.service.beta.kubernetes.io/azure-load-balancer-resource-group=${rg_name}"
 
-# Show extension details for Azure App Service
-echo "Showing extension details for Azure App Service ..."
+# Show extension details
+echo "Showing extension details for ${extension_desc} ..."
 az k8s-extension show --name $extension_name \
                       --cluster-name $cluster_name \
                       --resource-group $rg_name \
