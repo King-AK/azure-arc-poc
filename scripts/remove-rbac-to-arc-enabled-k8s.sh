@@ -3,15 +3,13 @@ rg_name=$2
 subscription_id=$3
 SP_NAME=$cluster_name
 access_check_custom_role_def_path="custom-role/accessCheck.json"
-access_check_custom_role_def=$(jq --arg scope "/subscriptions/$subscription_id" '.AssignableScopes[0] = $scope' $access_check_custom_role_def_path)
 
-
-# Create Custom Role
+# Remove Custom Role
 role_name=$(jq -r .Name $access_check_custom_role_def_path)
-echo "Creating custom role [$role_name] ..."
-ROLE_ID=$(az role definition create --role-definition "$access_check_custom_role_def" \
-                                    | jq -r .id)
-echo "Created custom role [$role_name] with id [$ROLE_ID] ..."
+role_scope="/subscriptions/$subscription_id" 
+echo "Removing custom role [$role_name] ..."
+az role definition delete --name "$role_name" --scope "$role_scope"
+echo "Removed custom Role [$role_name] ..."
 
 
 # # Collect Object ID
