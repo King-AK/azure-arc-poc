@@ -1,6 +1,8 @@
 cluster_name=$1
 rg_name=$2
 subscription_id=$3
+tenant_id=$4
+server_unique_suffix=$5
 SP_NAME=$cluster_name
 access_check_custom_role_def_path="custom-role/accessCheck.json"
 access_check_custom_role_def=$(jq --arg scope "/subscriptions/$subscription_id" '.AssignableScopes[0] = $scope' $access_check_custom_role_def_path)
@@ -12,6 +14,16 @@ echo "Creating custom role [$role_name] ..."
 ROLE_ID=$(az role definition create --role-definition "$access_check_custom_role_def" \
                                     | jq -r .id)
 echo "Created custom role [$role_name] with id [$ROLE_ID] ..."
+
+
+# Create Server Application
+server_app_display_name="${cluster_name}-server"
+server_identifier_uri="api://${tenant_id}/${server_unique_suffix}"
+echo "Creating server application [$server_app_display_name] ..."
+SERVER_APP_ID=$(az ad app create --display-name "${server_app_display_name}" \
+                                 --identifier-uris "${server_identifier_uri}" \
+                                 | jq -r .appId)
+echo "Created server application [$server_app_display_name] with identifier uri [$server_identifier_uri] and app id [$SERVER_APP_ID] ..."
 
 
 # # Collect Object ID

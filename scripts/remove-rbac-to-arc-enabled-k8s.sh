@@ -1,8 +1,20 @@
 cluster_name=$1
 rg_name=$2
 subscription_id=$3
+tenant_id=$4
+server_unique_suffix=$5
 SP_NAME=$cluster_name
 access_check_custom_role_def_path="custom-role/accessCheck.json"
+access_check_custom_role_def=$(jq --arg scope "/subscriptions/$subscription_id" '.AssignableScopes[0] = $scope' $access_check_custom_role_def_path)
+
+
+
+# Remove Server Application
+server_app_display_name="${cluster_name}-server"
+server_identifier_uri="api://${tenant_id}/${server_unique_suffix}"
+echo "Removing server application [$server_app_display_name] ..."
+az ad app delete --id "${server_identifier_uri}"
+echo "Removed server application [$server_app_display_name] ..."
 
 # Remove Custom Role
 role_name=$(jq -r .Name $access_check_custom_role_def_path)
@@ -10,7 +22,6 @@ role_scope="/subscriptions/$subscription_id"
 echo "Removing custom role [$role_name] ..."
 az role definition delete --name "$role_name" --scope "$role_scope"
 echo "Removed custom Role [$role_name] ..."
-
 
 # # Collect Object ID
 # OBJECT_ID=$(az ad signed-in-user show --query userPrincipalName -o tsv)
