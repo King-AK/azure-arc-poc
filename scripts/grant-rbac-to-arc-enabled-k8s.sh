@@ -68,6 +68,22 @@ CLIENT_APP_ID=$(az ad app create --display-name "${client_app_display_name}" \
                                  | jq -r .appId)
 echo "Created client application [$client_app_display_name] with identifier uri [$client_identifier_uri] and app id [$CLIENT_APP_ID] ..."
 
+# Create Service Principal for Client Application
+echo "Creating service principal for client application [$client_app_display_name] ..."
+az ad sp create --id "${CLIENT_APP_ID}"
+echo "Created service principal for client application [$client_app_display_name] ..."
+
+# Grant required permissions for client application RBAC
+oAuthPermissionId=$(az ad app show --id "${SERVER_APP_ID}" --query "api.oauth2PermissionScopes[0].id" -o tsv)
+
+echo "Updating permissions of client application [$client_app_display_name] ..."
+az ad app permission add --id "${CLIENT_APP_ID}" --api "${SERVER_APP_ID}" --api-permissions $oAuthPermissionId=Scope
+RESOURCE_APP_ID=$(az ad app show --id "${CLIENT_APP_ID}"  --query "requiredResourceAccess[0].resourceAppId" -o tsv)
+az ad app permission grant --id "${CLIENT_APP_ID}" --api "${RESOURCE_APP_ID}" --scope User.Read
+az ad app update --id ${CLIENT_APP_ID} --set  signInAudience=AzureADMyOrg
+CLIENT_OBJECT_ID=$(az ad app show --id "${CLIENT_APP_ID}" --query "id" -o tsv)
+az rest --method PATCH --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications/${CLIENT_OBJECT_ID}/ --body '{"api":{"requestedAccessTokenVersion": 1}}'
+echo "Updated permissions of client application [$client_app_display_name] ..."
 
 
 # Populate config file
