@@ -6,7 +6,7 @@ server_unique_suffix=$5
 SP_NAME=$cluster_name
 access_check_custom_role_def_path="custom-role/accessCheck.json"
 access_check_custom_role_def=$(jq --arg scope "/subscriptions/$subscription_id" '.AssignableScopes[0] = $scope' $access_check_custom_role_def_path)
-
+server_api_permissions_path="server-app-api-permissions/oauth2-permissions.json"
 
 # Create Custom Role
 role_name=$(jq -r .Name $access_check_custom_role_def_path)
@@ -24,6 +24,18 @@ SERVER_APP_ID=$(az ad app create --display-name "${server_app_display_name}" \
                                  --identifier-uris "${server_identifier_uri}" \
                                  | jq -r .appId)
 echo "Created server application [$server_app_display_name] with identifier uri [$server_identifier_uri] and app id [$SERVER_APP_ID] ..."
+
+
+# Grant permissions to Server Application
+jq --arg server_app_id "$SERVER_APP_ID" '.oauth2PermissionScopes[0].id = $server_app_id' $server_api_permissions_path > tmp/server_api_permissions.json
+
+echo "Updating permissions of server application [$server_app_display_name] ..."
+az ad app update --id "${SERVER_APP_ID}" --set groupMembershipClaims=All
+az ad app update --id ${SERVER_APP_ID} --set  api=@tmp/server_api_permissions.json
+az ad app update --id ${SERVER_APP_ID} --set  signInAudience=AzureADMyOrg
+SERVER_OBJECT_ID=$(az ad app show --id "${SERVER_APP_ID}" --query "id" -o tsv)
+az rest --method PATCH --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications/${SERVER_OBJECT_ID}/ --body '{"api":{"requestedAccessTokenVersion": 1}}'
+echo "Updated permissions of server application [$server_app_display_name] ..."
 
 
 # # Collect Object ID
