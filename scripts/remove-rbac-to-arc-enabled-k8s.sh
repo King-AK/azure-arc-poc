@@ -15,7 +15,7 @@ server_identifier_uri="api://${tenant_id}/${server_unique_suffix}"
 echo "Removing server application [$server_app_display_name] ..."
 az ad app delete --id "${server_identifier_uri}"
 echo "Removed server application [$server_app_display_name] ..."
-echo "Go to the AD Overview Page > App registrations > Deleted Applications to permanently delete [$server_app_display_name] and free API URI ..."
+echo "NOTE: Go to the AD Overview Page > App registrations > Deleted Applications to permanently delete [$server_app_display_name] and free API URI ..."
 ## TODO automate permanent app deletion with AD graph at a later point
 
 # Remove Custom Role

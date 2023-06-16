@@ -37,6 +37,27 @@ SERVER_OBJECT_ID=$(az ad app show --id "${SERVER_APP_ID}" --query "id" -o tsv)
 az rest --method PATCH --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications/${SERVER_OBJECT_ID}/ --body '{"api":{"requestedAccessTokenVersion": 1}}'
 echo "Updated permissions of server application [$server_app_display_name] ..."
 
+# Create Service Principal for Server Application and collect the credential
+echo "Creating service principal for server application [$server_app_display_name] ..."
+az ad sp create --id "${SERVER_APP_ID}"
+SERVER_APP_SECRET=$(az ad sp credential reset --id "${SERVER_APP_ID}" \
+                                              --query password -o tsv)
+echo "Created service principal for server application [$server_app_display_name] ..."
+
+# Grant "Sign in and read user profile" API permissions to the Server Application
+echo "Granting 'Sign in and read user profile' API permissions for server application [$server_app_display_name] ..."
+az ad app permission add --id "${SERVER_APP_ID}" \
+                         --api "00000003-0000-0000-c000-000000000000" \
+                         --api-permissions e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
+az ad app permission grant --id "${SERVER_APP_ID}" \
+                           --api 00000003-0000-0000-c000-000000000000 \
+                           --scope User.Read
+echo "Granted 'Sign in and read user profile' API permissions for server application [$server_app_display_name] ..."
+
+
+
+
+
 
 # # Collect Object ID
 # OBJECT_ID=$(az ad signed-in-user show --query userPrincipalName -o tsv)
