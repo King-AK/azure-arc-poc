@@ -17,10 +17,17 @@ echo "Removed client application [$client_app_display_name] ..."
 echo "NOTE: Go to the AD Overview Page > App registrations > Deleted Applications to permanently delete [$client_app_display_name] and free API URI ..."
 ## TODO automate permanent app deletion with AD graph at a later point
 
-
-# Remove Server Application
+# Remove Server Application Role Assignment
 server_app_display_name="${cluster_name}-server"
 server_app_id=$(jq -r .serverAppID $rbac_config_file_path)
+custom_role_id=$(jq -r .customRoleID $rbac_config_file_path)
+echo "Removing custom role assignment on application [$server_app_display_name] ..."
+az role assignment delete --role "${custom_role_id}" \
+                          --assignee "${server_app_id}" \
+                          --scope "/subscriptions/$subscription_id"
+echo "Removed custom role assignment on application [$server_app_display_name] ..."
+
+# Remove Server Application
 echo "Removing server application [$server_app_display_name] ..."
 az ad app delete --id "${server_app_id}"
 echo "Removed server application [$server_app_display_name] ..."

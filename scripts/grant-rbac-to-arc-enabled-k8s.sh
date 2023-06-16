@@ -56,6 +56,12 @@ az ad app permission grant --id "${SERVER_APP_ID}" \
                            --scope User.Read
 echo "Granted 'Sign in and read user profile' API permissions for server application [$server_app_display_name] ..."
 
+# Create custom role assignment on Server Application
+echo "Assigning custom role [$role_name] on server application [$server_app_display_name] ..."
+az role assignment create --role "${ROLE_ID}" \
+                          --assignee "${SERVER_APP_ID}" \
+                          --scope "/subscriptions/$subscription_id"
+echo "Assigned custom role [$role_name] on server application [$server_app_display_name] ..."
 
 
 # Create Client Application
@@ -89,6 +95,7 @@ echo "Updated permissions of client application [$client_app_display_name] ..."
 # Populate config file
 echo "Populating config file at path [$rbac_config_file_path]..."
 echo "{}" | \
+    jq --arg roleid $ROLE_ID '.customRoleID = $roleid' | \
     jq --arg appid $SERVER_APP_ID '.serverAppID = $appid' | \
     jq --arg appid $CLIENT_APP_ID '.clientAppID = $appid' > $rbac_config_file_path
 echo "Populated config file at path [$rbac_config_file_path] ..."
