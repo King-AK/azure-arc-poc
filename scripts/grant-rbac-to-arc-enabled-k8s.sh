@@ -2,11 +2,13 @@ cluster_name=$1
 rg_name=$2
 subscription_id=$3
 tenant_id=$4
-server_unique_suffix=$5
-SP_NAME=$cluster_name
+server_unique_suffix="cc96" # NOTE: parametrize in production situation
+client_unique_suffix="cc97" # NOTE: parametrize in production situation
+
 access_check_custom_role_def_path="custom-role/accessCheck.json"
 access_check_custom_role_def=$(jq --arg scope "/subscriptions/$subscription_id" '.AssignableScopes[0] = $scope' $access_check_custom_role_def_path)
 server_api_permissions_path="server-app-api-permissions/oauth2-permissions.json"
+rbac_config_file_path="tmp/rbac-setup-config.json"
 
 # Create Custom Role
 role_name=$(jq -r .Name $access_check_custom_role_def_path)
@@ -56,7 +58,24 @@ echo "Granted 'Sign in and read user profile' API permissions for server applica
 
 
 
+# Create Client Application
+client_app_display_name="${cluster_name}-client"
+client_identifier_uri="api://${tenant_id}/${client_unique_suffix}"
+echo "Creating client application [$client_app_display_name] ..."
+CLIENT_APP_ID=$(az ad app create --display-name "${client_app_display_name}" \
+                                 --is-fallback-public-client \
+                                 --public-client-redirect-uris "${client_identifier_uri}" \
+                                 | jq -r .appId)
+echo "Created client application [$client_app_display_name] with identifier uri [$client_identifier_uri] and app id [$CLIENT_APP_ID] ..."
 
+
+
+# Populate config file
+echo "Populating config file at path [$rbac_config_file_path]..."
+echo "{}" | \
+    jq --arg appid $SERVER_APP_ID '.serverAppID = $appid' | \
+    jq --arg appid $CLIENT_APP_ID '.clientAppID = $appid' > $rbac_config_file_path
+echo "Populated config file at path [$rbac_config_file_path] ..."
 
 
 # # Collect Object ID
