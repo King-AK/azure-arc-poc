@@ -24,4 +24,10 @@ bash scripts/delete-k8s-service-account.sh
 echo "Begin Deleting Arc Enabled K8s ..."
 bash scripts/delete-arc-enabled-k8s.sh $cluster_name $rg_name
 
+
+# Clean up RBAC feature
+echo "Begin removing Azure RBAC apps and other things ..."
+bash scripts/remove-rbac-to-arc-enabled-k8s.sh $cluster_name $rg_name $subscription_id $tenant_id
+
+
 echo "Remember to go to the portal and delete extra resources provisioned by Azure, e.g. RGs and log analytics workspaces!!!"
