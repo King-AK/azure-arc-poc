@@ -97,6 +97,7 @@ echo "Populating config file at path [$rbac_config_file_path]..."
 echo "{}" | \
     jq --arg roleid $ROLE_ID '.customRoleID = $roleid' | \
     jq --arg appid $SERVER_APP_ID '.serverAppID = $appid' | \
+    jq --arg secret $SERVER_APP_SECRET '.serverAppSecret = $secret' | \
     jq --arg appid $CLIENT_APP_ID '.clientAppID = $appid' > $rbac_config_file_path
 echo "Populated config file at path [$rbac_config_file_path] ..."
 
